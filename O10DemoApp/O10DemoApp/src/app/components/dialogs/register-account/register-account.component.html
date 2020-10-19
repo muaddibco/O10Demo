@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>Register new account</h1>
+<div mat-dialog-content>
+  <div style="display:flex; flex-direction:column; width:100%">
+    <mat-form-field appearance="fill">
+      <mat-label>Enter an alias for your account</mat-label>
+      <input matInput placeholder="Alias" [formControl]="alias" [(ngModel)]="data.alias">
+      <mat-error *ngIf="alias.invalid">Alias is mandatory</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Enter your password</mat-label>
+      <input matInput [type]="hidePassword ? 'password' : 'text'" [formControl]="password" [(ngModel)]="data.password">
+      <mat-error *ngIf="password.invalid">Password is mandatory</mat-error>
+      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hidePassword">
+        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button [mat-dialog-close]="data" [disabled]="alias.invalid || password.invalid">Submit</button>
+  <button mat-raised-button (click)="onCancelRegistration()">Cancel</button>
+</div>

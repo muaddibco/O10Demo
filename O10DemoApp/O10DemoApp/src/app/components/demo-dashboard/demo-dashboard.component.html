@@ -1,0 +1,105 @@
+<mat-tab-group>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">corporate_fare</mat-icon>
+      Identity Providers
+    </ng-template>
+
+    <table mat-table [dataSource]="demoConfig.idpAccounts" multiTemplateDataRows class="mat-elevation-z8">
+
+      <!-- Account Name Column -->
+      <ng-container matColumnDef="accountName">
+        <th mat-header-cell *matHeaderCellDef> Account Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.accountName}} </td>
+      </ng-container>
+
+      <!-- RSK Address Column -->
+      <ng-container matColumnDef="rskAddress">
+        <th mat-header-cell *matHeaderCellDef> RSK Address </th>
+        <td mat-cell *matCellDef="let element"> {{element.rskAddress}} </td>
+      </ng-container>
+
+      <!-- Activated Column -->
+      <ng-container matColumnDef="activated">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon aria-hidden="false" aria-label="done" color="primary"
+            *ngIf="element.activated && element.activationFinished">done</mat-icon>
+          <mat-icon aria-hidden="false" aria-label="in progress" *ngIf="!element.activationFinished">hourglass_empty
+          </mat-icon>
+          <mat-icon aria-hidden="false" aria-label="failure" color="warn"
+            *ngIf="!element.activated && element.activationFinished">report_problem</mat-icon>
+        </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsIdP.length">
+          <div class="element-detail" [@detailExpand]="element == expandedElementIdP ? 'expanded' : 'collapsed'">
+            <div>
+              <mat-icon aria-hidden="false" aria-label="error" color="warn" *ngIf="element.isInErrorState">error
+              </mat-icon>
+              <mat-icon aria-hidden="false" aria-label="info" *ngIf="!element.isInErrorState">info</mat-icon>
+              <span class="element-description">
+                {{element.currentState}}
+              </span>
+            </div>
+            <div>
+              <table mat-table [dataSource]="element.identityScheme" style="width: 100%;">
+                <!-- IsRoot Column -->
+                <ng-container matColumnDef="isRoot">
+                  <th mat-header-cell *matHeaderCellDef> Is Root </th>
+                  <td mat-cell *matCellDef="let item"> {{item.isRoot}} </td>
+                </ng-container>
+
+                <!-- Scheme Column -->
+                <ng-container matColumnDef="schemeName">
+                  <th mat-header-cell *matHeaderCellDef> Scheme Name </th>
+                  <td mat-cell *matCellDef="let item"> {{item.schemeName}} </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="attributeName">
+                  <th mat-header-cell *matHeaderCellDef> Attribute Name </th>
+                  <td mat-cell *matCellDef="let item"> {{item.attributeName}} </td>
+                </ng-container>
+
+                <!-- Alias Column -->
+                <ng-container matColumnDef="alias">
+                  <th mat-header-cell *matHeaderCellDef> Alias </th>
+                  <td mat-cell *matCellDef="let item"> {{item.alias}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsScheme"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsScheme;"></tr>
+              </table>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsIdP"></tr>
+      <tr mat-row *matRowDef="let element; columns: displayedColumnsIdP;" class="element-row"
+        [class.expanded-row]="expandedElementIdP === element"
+        (click)="expandedElementIdP = expandedElementIdP === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+    </table>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">storefront</mat-icon>
+      Relying Parties
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon" color="primary">people</mat-icon>
+      User Wallets
+    </ng-template>
+    <app-user-wallets></app-user-wallets>
+  </mat-tab>
+
+</mat-tab-group>
