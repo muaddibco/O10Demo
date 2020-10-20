@@ -1,1 +1,10 @@
-<p>user-wallet works!</p>
+<p *ngIf="userAttributeSchemes.length === 0"><em>No user attributes were requested yet...</em></p>
+<mat-accordion *ngIf="userAttributeSchemes.length > 0">
+    <mat-expansion-panel *ngFor="let attrScheme of userAttributeSchemes">
+        <mat-expansion-panel-header>
+            <mat-panel-title>{{attrScheme.issuerName}}</mat-panel-title>
+            <mat-panel-description>{{attrScheme.rootAttributeContent}}</mat-panel-description>
+          </mat-expansion-panel-header>
+    </mat-expansion-panel>
+</mat-accordion>
+<button mat-button (click)="requestRootIdentity()">Request Identity</button>

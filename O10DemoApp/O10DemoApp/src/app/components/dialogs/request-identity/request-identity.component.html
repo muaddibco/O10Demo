@@ -1,0 +1,69 @@
+<h1 mat-dialog-title>Request for identity</h1>
+<div mat-dialog-content>
+  <mat-horizontal-stepper #stepper (selectionChange)="selectionChange($event)">
+    <mat-step [stepControl]="accountsStepFormGroup">
+      <form [formGroup]="accountsStepFormGroup" style="min-height: 300px;">
+        <ng-template matStepLabel>Select Identity Provider</ng-template>
+        <mat-form-field>
+          <mat-label>Identity Provider</mat-label>
+          <mat-select formControlName="idpsSelect" [(ngModel)]="selectedIdP">
+            <mat-option *ngFor="let idp of idps" [value]="idp">
+              {{idp.accountInfo}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="attributesStepFormGroup">
+      <mat-progress-bar mode="indeterminate" *ngIf="attributesFetching"></mat-progress-bar>
+      <form [formGroup]="attributesStepFormGroup" *ngIf="!attributesFetching && attributesScheme" style="min-height: 300px;">
+        <p>
+          <mat-form-field>
+            <mat-label>{{attributesScheme.rootAttribute.alias}}</mat-label>
+            <input matInput formControlName="{{attributesScheme.rootAttribute.attributeName}}">
+          </mat-form-field>
+        </p>
+        <p *ngFor="let attr of attributesScheme.associatedAttributes">
+          <mat-form-field>
+            <mat-label>{{attr.alias}}</mat-label>
+            <input matInput formControlName="{{attr.attributeName}}">
+          </mat-form-field>
+        </p>
+      </form>
+      <div>
+        <button mat-button matStepperPrevious>Prev</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Confirmation</ng-template>
+      <table mat-table [dataSource]="output.attributeValues" *ngIf="output && output.attributeValues"
+        style="width: 100%; min-height: 300px;">
+        <!-- Attribute Alias Column -->
+        <ng-container matColumnDef="attributeAlias">
+          <th mat-header-cell *matHeaderCellDef>Alias</th>
+          <td mat-cell *matCellDef="let row">{{row.alias}}</td>
+        </ng-container>
+
+        <!-- value Column -->
+        <ng-container matColumnDef="attributeValue">
+          <th mat-header-cell *matHeaderCellDef>Value</th>
+          <td mat-cell *matCellDef="let row">{{row.value}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div>
+        <button mat-button matStepperPrevious>Prev</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button [mat-dialog-close]="output" [disabled]="!output">Submit</button>
+  <button mat-raised-button (click)="onCancel()">Cancel</button>
+</div>

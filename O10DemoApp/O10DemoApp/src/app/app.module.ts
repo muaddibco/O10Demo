@@ -18,6 +18,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,6 +31,8 @@ import { DemoDashboardComponent } from './components/demo-dashboard/demo-dashboa
 import { RegisterAccountComponent } from './components/dialogs/register-account/register-account.component';
 import { UserWalletComponent } from './components/user-wallet/user-wallet.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
+import { RequestIdentityComponent } from './components/dialogs/request-identity/request-identity.component';
+import { AuthenticatePwdComponent } from './components/dialogs/authenticate-pwd/authenticate-pwd.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +45,8 @@ import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
     RegisterAccountComponent,
     UserWalletComponent,
     NavMenuComponent,
+    RequestIdentityComponent,
+    AuthenticatePwdComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,7 +55,7 @@ import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
     ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatTableModule, MatIconModule, MatPaginatorModule, MatButtonModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatToolbarModule
+    MatTableModule, MatIconModule, MatPaginatorModule, MatButtonModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatToolbarModule, MatStepperModule, MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

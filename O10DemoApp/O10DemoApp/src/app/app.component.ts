@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Subject } from 'rxjs';
 import { AccountDTO, AccountsService } from './services/accounts.service';
 import { DemoAccount, demoConfig, DemoIdpAccount, DemoSpAccount } from './services/demo-state.service';
@@ -55,28 +56,31 @@ export class AppComponent implements OnInit {
 
       const accountSubject = new Subject<DemoAccount>();
       accountSubject.subscribe(a => {
-        a.currentState = "setting RSK integration...";
-        that.accountsService.setRskIntegration(a.account.accountId).subscribe(r => {
-          if (r) {
-            if (a.accountType === 1) {
-              a.currentState = "setting up smart-contract registration...";
-              that.identityProviderService.activate(a.account.accountId).subscribe(r => {
-                a.activated = r.actionSucceeded;
-                a.rskAddress = r.integrationAddress;
-                if (r.actionSucceeded) {
-                  a.currentState = "smart-contract registration completed";
-                  accountRegisteredSubject.next(<DemoIdpAccount>a);
-                } else {
-                  a.activationFinished = true;
-                  a.isInErrorState = true;
-                  a.currentState = "smart-contract registration failed, error: " + r.errorMsg;
-                  this.messageService.add("Initializing of the demo account " + a.accountName + " failed");
-                }
-              });
-            } else if(a.accountType === 2) {
+        a.currentState = "starting account...";
+        that.accountsService.startAccount(a.account.accountId).subscribe(r => {
+          a.currentState = "setting RSK integration...";
+          that.accountsService.setRskIntegration(a.account.accountId).subscribe(r => {
+            if (r) {
+              if (a.accountType === 1) {
+                a.currentState = "setting up smart-contract registration...";
+                that.identityProviderService.activate(a.account.accountId).subscribe(r => {
+                  a.activated = r.actionSucceeded;
+                  a.rskAddress = r.integrationAddress;
+                  if (r.actionSucceeded) {
+                    a.currentState = "smart-contract registration completed";
+                    accountRegisteredSubject.next(<DemoIdpAccount>a);
+                  } else {
+                    a.activationFinished = true;
+                    a.isInErrorState = true;
+                    a.currentState = "smart-contract registration failed, error: " + r.errorMsg;
+                    this.messageService.add("Initializing of the demo account " + a.accountName + " failed");
+                  }
+                });
+              } else if (a.accountType === 2) {
 
+              }
             }
-          }
+          });
         });
       });
 

@@ -15,8 +15,8 @@ export class SchemeResolutionService {
     private http: HttpClient,
     private messageService: MessageService) { }
 
-    putAttributeDefinitions(issuer: string, attributeDefinitions: NewAttributeDefinition[]) {
-      return this.http.put<AttributeDefinitionsResponse>(demoConfig.baseUri + "/api/SchemeResolution/AttributeDefinitions?issuer=" + issuer, attributeDefinitions)
+  putAttributeDefinitions(issuer: string, attributeDefinitions: NewAttributeDefinition[]) {
+    return this.http.put<AttributeDefinitionsResponse>(demoConfig.baseUri + "/api/SchemeResolution/AttributeDefinitions?issuer=" + issuer, attributeDefinitions)
       .pipe(
         catchError(error => {
           const msg = "Failed to put attribute definitions: " + error.message;
@@ -24,8 +24,8 @@ export class SchemeResolutionService {
           return of(<AttributeDefinitionsResponse>null);
         })
       );
-    }
   }
+}
 
 export interface AttributeDefinitionsResponse {
   attributeDefinitions: AttributeDefinition[];
