@@ -78,5 +78,11 @@ export interface UserAttributeScheme {
   rootAssetId: string;
   schemeName: string;
   rootAttributes: UserAttribute[];
-  associatedAttributes: UserAssociatedAttribute[];
+  associatedSchemes: UserAssociatedAttributes[];
+}
+
+export interface UserAssociatedAttributes {
+  issuer: string;
+  issuerName: string;
+  attributes: UserAssociatedAttribute[];
 }

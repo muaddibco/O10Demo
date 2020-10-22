@@ -1,10 +1,45 @@
 <p *ngIf="userAttributeSchemes.length === 0"><em>No user attributes were requested yet...</em></p>
 <mat-accordion *ngIf="userAttributeSchemes.length > 0">
-    <mat-expansion-panel *ngFor="let attrScheme of userAttributeSchemes">
-        <mat-expansion-panel-header>
-            <mat-panel-title>{{attrScheme.issuerName}}</mat-panel-title>
-            <mat-panel-description>{{attrScheme.rootAttributeContent}}</mat-panel-description>
-          </mat-expansion-panel-header>
-    </mat-expansion-panel>
+  <mat-expansion-panel *ngFor="let attrScheme of userAttributeSchemes">
+    <mat-expansion-panel-header class="header-centered">
+      <mat-panel-title>From {{attrScheme.issuerName}}</mat-panel-title>
+      <mat-panel-description>
+        <div class="container-inner">
+          <span>[{{attrScheme.rootAttributeContent}}]</span>
+          <img src="/assets/img/icons8-contact-gray-50.png" *ngIf="attrScheme.state == 0" />
+          <img src="/assets/img/icons8-contact-green-50.png" *ngIf="attrScheme.state == 1" />
+          <img src="/assets/img/icons8-contact-red-50.png" *ngIf="attrScheme.state == 2" />
+        </div>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div>
+      <mat-card *ngFor="let associatedScheme of attrScheme.associatedSchemes">
+        <mat-card-header>
+          <mat-card-title>{{associatedScheme.issuerName}}</mat-card-title>
+          <mat-card-subtitle>{{associatedScheme.issuer}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="associatedScheme.attributes" class="mat-elevation-z8">
+            <!-- Alias Column -->
+            <ng-container matColumnDef="alias">
+              <th mat-header-cell *matHeaderCellDef> Alias </th>
+              <td mat-cell *matCellDef="let element"> {{element.alias}} </td>
+            </ng-container>
+
+            <!-- Content Column -->
+            <ng-container matColumnDef="content">
+              <th mat-header-cell *matHeaderCellDef> Content </th>
+              <td mat-cell *matCellDef="let element"> {{element.content}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedAssociatedAttrColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedAssociatedAttrColumns;"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+      <div class="footer">
+        <button mat-raised-button (click)="requestAssociatedIdentity(attrScheme)">Request Associated Identity</button>
+      </div>
+    </div>
+  </mat-expansion-panel>
 </mat-accordion>
 <button mat-button (click)="requestRootIdentity()">Request Identity</button>

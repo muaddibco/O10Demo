@@ -1,11 +1,11 @@
-<div *ngIf="messageService.messages.length">
+<div *ngIf="messageService.messages.length" style="min-height: 400px;">
 
   <h2>Messages</h2>
   <button mat-raised-button color="primary" (click)="messageService.clear()">clear</button>
   <br/>
   <br/>
 
-  <div>
+  <div style="min-height: 400px;">
     <table mat-table [dataSource]="messageService.messages" class="mat-elevation-z8" matSort matSortActive="created"
       matSortDisableClear matSortDirection="desc">
 
@@ -36,6 +36,6 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <mat-paginator [length]="messageService.messagesCount" [pageSize]="30"></mat-paginator>
+  <mat-paginator [length]="messageService.messagesCount" [pageSize]="6"></mat-paginator>
 
 </div>

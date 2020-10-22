@@ -72,20 +72,26 @@ export class AccountsService {
           this.messageService.error(msg);
           return of(false);
         }),
-        map(r => true)
+        map(r => {
+          if (typeof r === "boolean") {
+            return r;
+          } else {
+            return true;
+          }
+        })
       );
   }
 
   startAccount(accountId: number) {
-    return this.http.post<AccountDTO>(demoConfig.baseUri + '/api/accounts/start', {accountId: accountId})
-    .pipe(
-      catchError(error => {
-        const msg = "Failed to start the account due to the error: " + error.message;
-        this.messageService.error(msg);
-        return of(<AccountDTO>null);
-      }),
-      map(r => r)
-    );
+    return this.http.post<AccountDTO>(demoConfig.baseUri + '/api/accounts/start', { accountId: accountId })
+      .pipe(
+        catchError(error => {
+          const msg = "Failed to start the account due to the error: " + error.message;
+          this.messageService.error(msg);
+          return of(<AccountDTO>null);
+        }),
+        map(r => r)
+      );
   }
 
   initiateBindingKey(accountId: number, pwd: string) {
@@ -96,7 +102,25 @@ export class AccountsService {
           this.messageService.error(msg);
           return of(false);
         }),
-        map(r => true)
+        map(r => {
+          if (typeof r === "boolean") {
+            return r;
+          } else {
+            return true;
+          }
+        })
+      );
+  }
+
+  isBindingKeySet(accountId: number) {
+    return this.http.get<boolean>(demoConfig.baseUri + '/api/accounts/BindingKey?accountId=' + accountId)
+      .pipe(
+        catchError(error => {
+          const msg = "Failed to check whether binding key of the account is set due to the error: " + error.message;
+          this.messageService.error(msg);
+          return of(false);
+        }),
+        map(r => r)
       );
   }
 }
