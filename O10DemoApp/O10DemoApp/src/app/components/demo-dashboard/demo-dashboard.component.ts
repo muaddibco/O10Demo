@@ -16,8 +16,9 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 })
 export class DemoDashboardComponent implements OnInit {
   public demoConfig: DemoConfig;
-  public displayedColumnsIdP: string[] = ['accountName', 'rskAddress', 'activated']
+  public displayedColumnsAccounts: string[] = ['accountName', 'rskAddress', 'activated']
   public displayedColumnsScheme: string[] = ['isRoot', 'schemeName', 'attributeName', 'alias']
+  public displayedColumnsValidations: string[] = ['name', 'type']
   expandedElementIdP: DemoIdpAccount | null;
 
   constructor() { 
