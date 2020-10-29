@@ -1,0 +1,33 @@
+table {
+    width: 100%;
+  }
+  
+  .container .mat-form-field+.mat-form-field {
+    margin-left: 8px;
+  }
+  
+  .right-align {
+    text-align: right;
+  }
+  
+  input.right-align::-webkit-outer-spin-button,
+  input.right-align::-webkit-inner-spin-button {
+    display: none;
+  }
+  
+  input.right-align {
+    -moz-appearance: textfield;
+  }
+  
+  .mat-column-accountId {
+    flex: 0 0 10%;
+    width: 10%;
+  }
+  
+  .mat-row {
+    cursor: pointer;
+  }
+  
+  .mat-row:hover {
+    background-color: lightgray;
+  }

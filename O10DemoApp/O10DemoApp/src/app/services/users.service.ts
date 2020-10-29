@@ -11,33 +11,53 @@ import { AttributeDefinition } from './scheme-resolution.service';
 })
 export class UsersService {
 
+  private uri: string = demoConfig.baseUri + '/api/User';
+
   constructor(
     private http: HttpClient,
     private messageService: MessageService
   ) { }
 
   requestAttributesIssuance(accountId: number, request: AttributesIssuanceRequest) {
-    return this.http.post<AttributeValue[]>(demoConfig.baseUri + '/api/User/AttributesIssuance?accountId=' + accountId, request)
-    .pipe(
-      catchError(error => {
-        const msg = "Failed to request attributes issuance due to the error: " + error.message;
-        this.messageService.error(msg);
-        return of(<AttributeValue[]>[]);
-      }),
-      map(r => r)
-    );
+    return this.http.post<AttributeValue[]>(this.uri + '/AttributesIssuance?accountId=' + accountId, request)
+      .pipe(
+        catchError(error => {
+          const msg = "Failed to request attributes issuance due to the error: " + error.message;
+          this.messageService.error(msg);
+          return of(<AttributeValue[]>[]);
+        }),
+        map(r => r)
+      );
   }
 
   getUserAttributes(accountId: number) {
-    return this.http.get<UserAttributeScheme[]>(demoConfig.baseUri + '/api/User/UserAttributes?accountId=' + accountId)
-    .pipe(
-      catchError(error => {
-        const msg = "Failed to fetch user attributes due to the error: " + error.message;
-        this.messageService.error(msg);
-        return of(<UserAttributeScheme[]>[]);
-      }),
-      map(r => r)
-    );
+    return this.http.get<UserAttributeScheme[]>(this.uri + '/UserAttributes?accountId=' + accountId)
+      .pipe(
+        catchError(error => {
+          const msg = "Failed to fetch user attributes due to the error: " + error.message;
+          this.messageService.error(msg);
+          return of(<UserAttributeScheme[]>[]);
+        }),
+        map(r => r)
+      );
+  }
+
+  castVote(accountId: number, pollId: number, assetIds: string[], selectedAssetId: string) {
+    return this.http.post(this.uri + '/Vote?accountId=' + accountId, { pollId: pollId, candidateAssetIds: assetIds, selectedAssetId: selectedAssetId })
+      .pipe(
+        catchError(error => {
+          const msg = "Failed to cast vote due to the error: " + error.message;
+          this.messageService.error(msg);
+          return of(false);
+        }),
+        map(r => {
+          if (typeof r === "boolean") {
+            return r;
+          } else {
+            return true;
+          }
+        })
+      );
   }
 }
 

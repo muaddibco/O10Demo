@@ -1,45 +1,94 @@
-<p *ngIf="userAttributeSchemes.length === 0"><em>No user attributes were requested yet...</em></p>
-<mat-accordion *ngIf="userAttributeSchemes.length > 0">
-  <mat-expansion-panel *ngFor="let attrScheme of userAttributeSchemes">
-    <mat-expansion-panel-header class="header-centered">
-      <mat-panel-title>From {{attrScheme.issuerName}}</mat-panel-title>
-      <mat-panel-description>
-        <div class="container-inner">
-          <span>[{{attrScheme.rootAttributeContent}}]</span>
-          <img src="/assets/img/icons8-contact-gray-50.png" *ngIf="attrScheme.state == 0" />
-          <img src="/assets/img/icons8-contact-green-50.png" *ngIf="attrScheme.state == 1" />
-          <img src="/assets/img/icons8-contact-red-50.png" *ngIf="attrScheme.state == 2" />
-        </div>
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <div>
-      <mat-card *ngFor="let associatedScheme of attrScheme.associatedSchemes">
-        <mat-card-header>
-          <mat-card-title>{{associatedScheme.issuerName}}</mat-card-title>
-          <mat-card-subtitle>{{associatedScheme.issuer}}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <table mat-table [dataSource]="associatedScheme.attributes" class="mat-elevation-z8">
-            <!-- Alias Column -->
-            <ng-container matColumnDef="alias">
-              <th mat-header-cell *matHeaderCellDef> Alias </th>
-              <td mat-cell *matCellDef="let element"> {{element.alias}} </td>
-            </ng-container>
+<mat-expansion-panel style="background-color: aliceblue; margin: 5px;">
+  <mat-expansion-panel-header class="header-centered">
+    <mat-panel-title style="font-weight: bold;">Available Service Providers</mat-panel-title>
+  </mat-expansion-panel-header>
+  <div>
+    <table mat-table [dataSource]="serviceProviders" class="mat-elevation-z8" matSort matSortActive="accountName"
+      matSortDisableClear matSortDirection="desc" style="width: 100%;">
 
-            <!-- Content Column -->
-            <ng-container matColumnDef="content">
-              <th mat-header-cell *matHeaderCellDef> Content </th>
-              <td mat-cell *matCellDef="let element"> {{element.content}} </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedAssociatedAttrColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedAssociatedAttrColumns;"></tr>
-          </table>
-        </mat-card-content>
+      <!-- AccountName Column -->
+      <ng-container matColumnDef="accountName">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row">{{row.accountName}}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedSpColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedSpColumns;"></tr>
+    </table>
+  </div>
+  <mat-paginator style="background-color: aliceblue;" [length]="serviceProviders.length" [pageSize]="5"></mat-paginator>
+</mat-expansion-panel>
+
+<mat-card style="margin: 5px">
+  <mat-card-header>
+    <mat-card-title>Root Identities</mat-card-title>
+  </mat-card-header>
+  <div *ngIf="updating">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div *ngIf="!updating">
+    <p *ngIf="userAttributeSchemes.length === 0"><em>No user attributes were requested yet...</em></p>
+    <mat-accordion *ngIf="userAttributeSchemes.length > 0">
+      <mat-expansion-panel *ngFor="let attrScheme of userAttributeSchemes">
+        <mat-expansion-panel-header class="header-centered">
+          <mat-panel-title>From {{attrScheme.issuerName}}</mat-panel-title>
+          <mat-panel-description>
+            <div class="container-inner">
+              <span>[{{attrScheme.rootAttributeContent}}]</span>
+              <img src="/assets/img/icons8-contact-gray-50.png" *ngIf="attrScheme.state == 0" />
+              <img src="/assets/img/icons8-contact-green-50.png" *ngIf="attrScheme.state == 1" />
+              <img src="/assets/img/icons8-contact-red-50.png" *ngIf="attrScheme.state == 2" />
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div>
+          <mat-card *ngFor="let associatedScheme of attrScheme.associatedSchemes">
+            <mat-card-header>
+              <mat-card-title>{{associatedScheme.issuerName}}</mat-card-title>
+              <mat-card-subtitle>{{associatedScheme.issuer}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <table mat-table [dataSource]="associatedScheme.attributes" class="mat-elevation-z8">
+                <!-- Alias Column -->
+                <ng-container matColumnDef="alias">
+                  <th mat-header-cell *matHeaderCellDef> Alias </th>
+                  <td mat-cell *matCellDef="let element"> {{element.alias}} </td>
+                </ng-container>
+
+                <!-- Content Column -->
+                <ng-container matColumnDef="content">
+                  <th mat-header-cell *matHeaderCellDef> Content </th>
+                  <td mat-cell *matCellDef="let element"> {{element.content}} </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedAssociatedAttrColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedAssociatedAttrColumns;"></tr>
+              </table>
+            </mat-card-content>
+          </mat-card>
+          <div class="footer">
+            <button mat-raised-button (click)="requestAssociatedIdentity(attrScheme)">Request Associated
+              Identity</button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <button mat-raised-button (click)="requestRootIdentity()"
+      style="background-color: aliceblue; margin-top: 10px;">Request Identity</button>
+  </div>
+</mat-card>
+
+<mat-expansion-panel style="background-color: aliceblue; margin: 5px;" *ngIf="polls && polls.length > 0">
+  <mat-expansion-panel-header class="header-centered">
+    <mat-panel-title>Active Polls</mat-panel-title>
+  </mat-expansion-panel-header>
+  <mat-grid-list cols="2" rowHeight="4:1">
+    <mat-grid-tile *ngFor="let poll of polls">
+      <mat-card style="margin: 5px; background-color: lavender;">
+        <mat-card-header>
+          <mat-card-title>Participate in the poll {{poll.name}}</mat-card-title>
+        </mat-card-header>
+        <button mat-raised-button (click)="onParticipateInPoll(poll)">Vote!</button>
       </mat-card>
-      <div class="footer">
-        <button mat-raised-button (click)="requestAssociatedIdentity(attrScheme)">Request Associated Identity</button>
-      </div>
-    </div>
-  </mat-expansion-panel>
-</mat-accordion>
-<button mat-button (click)="requestRootIdentity()">Request Identity</button>
+    </mat-grid-tile>
+  </mat-grid-list>
+</mat-expansion-panel>

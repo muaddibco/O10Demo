@@ -20,6 +20,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -33,6 +36,10 @@ import { UserWalletComponent } from './components/user-wallet/user-wallet.compon
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { RequestIdentityComponent } from './components/dialogs/request-identity/request-identity.component';
 import { AuthenticatePwdComponent } from './components/dialogs/authenticate-pwd/authenticate-pwd.component';
+import { ElectionCommitteeComponent } from './components/election-committee/election-committee.component';
+import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
+import { PollComponent } from './components/poll/poll.component';
+import { UserVoteComponent } from './components/user-vote/user-vote.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +54,10 @@ import { AuthenticatePwdComponent } from './components/dialogs/authenticate-pwd/
     NavMenuComponent,
     RequestIdentityComponent,
     AuthenticatePwdComponent,
+    ElectionCommitteeComponent,
+    InputDialogComponent,
+    PollComponent,
+    UserVoteComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,7 +66,7 @@ import { AuthenticatePwdComponent } from './components/dialogs/authenticate-pwd/
     ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatTableModule, MatIconModule, MatPaginatorModule, MatButtonModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatToolbarModule, MatStepperModule, MatProgressBarModule
+    MatTableModule, MatIconModule, MatPaginatorModule, MatButtonModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatToolbarModule, MatStepperModule, MatProgressBarModule, MatGridListModule, MatSlideToggleModule, MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <div style="display:flex; flex-direction:column; width:100%">
+    <mat-form-field appearance="fill">
+        <mat-label>{{data.invitation}}</mat-label>
+        <input matInput placeholder="{{data.placeholder}}" [formControl]="inputCtrl" [(ngModel)]="inputStr">
+        <mat-error *ngIf="inputCtrl.invalid">The field is mandatory</mat-error>
+      </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button [mat-dialog-close]="inputStr" [disabled]="inputCtrl.invalid">Submit</button>
+  <button mat-raised-button (click)="onCancel()">Cancel</button>
+</div>

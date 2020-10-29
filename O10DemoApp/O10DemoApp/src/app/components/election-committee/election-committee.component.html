@@ -1,0 +1,33 @@
+<div *ngIf="polls.length > 0">
+    <div>
+      <table mat-table [dataSource]="polls" class="mat-elevation-z8" matSort matSortActive="pollId"
+        matSortDisableClear matSortDirection="desc">
+
+        <!-- PollId Column -->
+        <ng-container matColumnDef="pollId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Poll Id</th>
+          <td mat-cell *matCellDef="let row">{{row.pollId}}</td>
+        </ng-container>
+
+        <!-- Poll Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{row.name}}</td>
+        </ng-container>
+
+        <!-- Poll State Column -->
+        <ng-container matColumnDef="state">
+            <th mat-header-cell *matHeaderCellDef>State</th>
+            <td mat-cell *matCellDef="let row">{{row.state}}</td>
+          </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onOpenPoll(row.pollId)"></tr>
+      </table>
+    </div>
+    <mat-paginator [length]="polls.length" [pageSize]="30"></mat-paginator>
+  </div>
+  <div *ngIf="polls.length === 0">
+    <p>No polls were created yet...</p>
+  </div>
+  <button mat-raised-button color="primary" (click)="onAddPoll()">Add Poll...</button>

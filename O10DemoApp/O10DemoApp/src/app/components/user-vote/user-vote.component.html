@@ -1,0 +1,34 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matSortActive="candidateId" matSortDisableClear
+  matSortDirection="desc">
+
+  <!-- CandidateId Column -->
+  <ng-container matColumnDef="candidateId">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear>Candidate Id</th>
+    <td mat-cell *matCellDef="let row">{{row.candidate.candidateId}}</td>
+  </ng-container>
+
+  <!-- Candidate Name Column -->
+  <ng-container matColumnDef="candidateName">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let row">{{row.candidate.name}}</td>
+  </ng-container>
+
+  <!-- AssetId Column -->
+  <ng-container matColumnDef="assetId">
+    <th mat-header-cell *matHeaderCellDef>AssetId</th>
+    <td mat-cell *matCellDef="let row">{{row.candidate.assetId}}</td>
+  </ng-container>
+
+  <!-- Selection Column -->
+  <ng-container matColumnDef="selection">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let row">
+        <mat-slide-toggle [checked]="row.selected" [id]="row.candidate.candidateId" (change)="onSelectionChange($event)"></mat-slide-toggle>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<button mat-raised-button (click)="castVote()" color="accent">Cast Vote</button>
+<button mat-raised-button (click)="cancel()" color="primary">Cancel</button>
