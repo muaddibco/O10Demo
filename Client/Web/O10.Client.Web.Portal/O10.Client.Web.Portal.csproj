@@ -9,11 +9,12 @@
     <!-- Set this to true if you enable server-side prerendering -->
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
     <ApplicationInsightsResourceId>/subscriptions/2251f9c5-4248-4f42-811f-3923e2475ace/resourcegroups/O10Demo/providers/microsoft.insights/components/O10DemoPortal</ApplicationInsightsResourceId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <AssemblyName>O10.Client.Web.Portal</AssemblyName>
     <RootNamespace>O10.Client.Web.Portal</RootNamespace>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
+    <Authors>O10</Authors>
   </PropertyGroup>
 
   <!--<ItemGroup>
