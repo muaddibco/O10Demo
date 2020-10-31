@@ -1,6 +1,6 @@
 <div *ngIf="polls.length > 0">
     <div>
-      <table mat-table [dataSource]="polls" class="mat-elevation-z8" matSort matSortActive="pollId"
+      <table mat-table [dataSource]="pollsDataSource" class="mat-elevation-z8" matSort matSortActive="pollId"
         matSortDisableClear matSortDirection="desc">
 
         <!-- PollId Column -->
@@ -25,7 +25,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onOpenPoll(row.pollId)"></tr>
       </table>
     </div>
-    <mat-paginator [length]="polls.length" [pageSize]="30"></mat-paginator>
+    <mat-paginator [length]="polls.length" [pageSize]="6"></mat-paginator>
   </div>
   <div *ngIf="polls.length === 0">
     <p>No polls were created yet...</p>

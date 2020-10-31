@@ -40,6 +40,7 @@ import { ElectionCommitteeComponent } from './components/election-committee/elec
 import { InputDialogComponent } from './components/dialogs/input-dialog/input-dialog.component';
 import { PollComponent } from './components/poll/poll.component';
 import { UserVoteComponent } from './components/user-vote/user-vote.component';
+import { SpFrontendComponent } from './components/sp-frontend/sp-frontend.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { UserVoteComponent } from './components/user-vote/user-vote.component';
     InputDialogComponent,
     PollComponent,
     UserVoteComponent,
+    SpFrontendComponent,
   ],
   imports: [
     BrowserModule,

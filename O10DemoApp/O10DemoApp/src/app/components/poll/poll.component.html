@@ -17,7 +17,7 @@
           <mat-option value="4">Cancelled</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field appearance="fill" *ngIf="pollState == '2'" style="margin-left: 10px;">
+      <mat-form-field appearance="fill" *ngIf="pollState == '2' && oldPollState != pollState" style="margin-left: 10px;">
         <mat-label>Select IdP</mat-label>
         <mat-select [(value)]="selectedIdP">
           <mat-option value="">None</mat-option>

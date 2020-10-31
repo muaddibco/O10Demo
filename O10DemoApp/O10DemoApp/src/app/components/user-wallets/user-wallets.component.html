@@ -1,12 +1,8 @@
 <div>
 
-  <button mat-raised-button color="primary" (click)="onAddAccount()">Add...</button>
-  <br />
-  <br />
-
   <div *ngIf="accounts.length > 0">
     <div>
-      <table mat-table [dataSource]="accounts" class="mat-elevation-z8" matSort matSortActive="accountId"
+      <table mat-table [dataSource]="accountsDataSource" class="mat-elevation-z8" matSort matSortActive="accountId"
         matSortDisableClear matSortDirection="desc">
 
         <!-- AccountId Column -->
@@ -30,4 +26,5 @@
   <div *ngIf="accounts.length === 0">
     <p>No accounts were created yet...</p>
   </div>
+  <button mat-raised-button color="primary" style="marging-top: 10px;" (click)="onAddAccount()">Add...</button>
 </div>

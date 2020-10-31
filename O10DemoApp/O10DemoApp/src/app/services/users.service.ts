@@ -59,6 +59,29 @@ export class UsersService {
         })
       );
   }
+
+  sendUniversalProofs(accountId: number, target: string, sessionKey: string, spInfo: string, rootAttributeId: number) {
+    return this.http.post(this.uri + '/UniversalProofs?accountId=' + accountId, {
+      target: target,
+      sessionKey: sessionKey,
+      serviceProviderInfo: spInfo,
+      rootAttributeId: rootAttributeId
+    })
+      .pipe(
+        catchError(error => {
+          const msg = "Failed to send universal proofs due to the error: " + error.message;
+          this.messageService.error(msg);
+          return of(false);
+        }),
+        map(r => {
+          if (typeof r === "boolean") {
+            return r;
+          } else {
+            return true;
+          }
+        })
+      );
+  }
 }
 
 export class AttributesIssuanceRequest {

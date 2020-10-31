@@ -1,23 +1,37 @@
-<mat-expansion-panel style="background-color: aliceblue; margin: 5px;">
-  <mat-expansion-panel-header class="header-centered">
-    <mat-panel-title style="font-weight: bold;">Available Service Providers</mat-panel-title>
-  </mat-expansion-panel-header>
-  <div>
-    <table mat-table [dataSource]="serviceProviders" class="mat-elevation-z8" matSort matSortActive="accountName"
-      matSortDisableClear matSortDirection="desc" style="width: 100%;">
+<mat-card style="background-color: lightsteelblue; margin: 5px;">
+  <mat-card-header>
+    <mat-card-title>Available Service Providers</mat-card-title>
+  </mat-card-header>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header class="header-centered">
+      <mat-panel-title>expand to see...</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div>
+      <table mat-table [dataSource]="serviceProviders" class="mat-elevation-z8" matSort matSortActive="accountName"
+        matSortDisableClear matSortDirection="desc" style="width: 100%; background-color: aliceblue;">
 
-      <!-- AccountName Column -->
-      <ng-container matColumnDef="accountName">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let row">{{row.accountName}}</td>
-      </ng-container>
+        <!-- AccountName Column -->
+        <ng-container matColumnDef="accountName">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{row.accountName}}</td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedSpColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedSpColumns;"></tr>
-    </table>
-  </div>
-  <mat-paginator style="background-color: aliceblue;" [length]="serviceProviders.length" [pageSize]="5"></mat-paginator>
-</mat-expansion-panel>
+        <!-- Image Column -->
+        <ng-container matColumnDef="image">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <img src="/assets/img/icons8-open-in-browser-64.png" />
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedSpColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedSpColumns;" (click)="onOpenSp(row)"></tr>
+      </table>
+    </div>
+    <mat-paginator style="background-color: aliceblue;" [length]="serviceProviders.length" [pageSize]="5">
+    </mat-paginator>
+  </mat-expansion-panel>
+</mat-card>
 
 <mat-card style="margin: 5px">
   <mat-card-header>
@@ -31,10 +45,12 @@
     <mat-accordion *ngIf="userAttributeSchemes.length > 0">
       <mat-expansion-panel *ngFor="let attrScheme of userAttributeSchemes">
         <mat-expansion-panel-header class="header-centered">
-          <mat-panel-title>From {{attrScheme.issuerName}}</mat-panel-title>
+          <mat-panel-title style="max-width: 30%;">From {{attrScheme.issuerName}}</mat-panel-title>
           <mat-panel-description>
             <div class="container-inner">
-              <span>[{{attrScheme.rootAttributeContent}}]</span>
+              <img src="/assets/img/icons8-elections-64.png" *ngIf="!attrScheme.rootAttributeContent"
+                style="float: left;" />
+              <span *ngIf="attrScheme.rootAttributeContent">[{{attrScheme.rootAttributeContent}}]</span>
               <img src="/assets/img/icons8-contact-gray-50.png" *ngIf="attrScheme.state == 0" />
               <img src="/assets/img/icons8-contact-green-50.png" *ngIf="attrScheme.state == 1" />
               <img src="/assets/img/icons8-contact-red-50.png" *ngIf="attrScheme.state == 2" />
@@ -65,7 +81,7 @@
               </table>
             </mat-card-content>
           </mat-card>
-          <div class="footer">
+          <div class="footer" *ngIf="attrScheme.rootAttributeContent">
             <button mat-raised-button (click)="requestAssociatedIdentity(attrScheme)">Request Associated
               Identity</button>
           </div>
@@ -77,18 +93,23 @@
   </div>
 </mat-card>
 
-<mat-expansion-panel style="background-color: aliceblue; margin: 5px;" *ngIf="polls && polls.length > 0">
-  <mat-expansion-panel-header class="header-centered">
-    <mat-panel-title>Active Polls</mat-panel-title>
-  </mat-expansion-panel-header>
-  <mat-grid-list cols="2" rowHeight="4:1">
-    <mat-grid-tile *ngFor="let poll of polls">
-      <mat-card style="margin: 5px; background-color: lavender;">
-        <mat-card-header>
-          <mat-card-title>Participate in the poll {{poll.name}}</mat-card-title>
-        </mat-card-header>
-        <button mat-raised-button (click)="onParticipateInPoll(poll)">Vote!</button>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
-</mat-expansion-panel>
+<mat-card style="background-color: lightsteelblue; margin: 5px;">
+  <mat-card-header>
+    <mat-card-title>Active Polls</mat-card-title>
+  </mat-card-header>
+  <mat-expansion-panel *ngIf="polls && polls.length > 0">
+    <mat-expansion-panel-header class="header-centered">
+      <mat-panel-title>expand to see...</mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-grid-list cols="2" rowHeight="4:1">
+      <mat-grid-tile *ngFor="let poll of polls">
+        <mat-card style="margin: 5px; background-color: lavender;">
+          <mat-card-header>
+            <mat-card-title>Participate in the poll {{poll.name}}</mat-card-title>
+          </mat-card-header>
+          <button mat-raised-button (click)="onParticipateInPoll(poll)">Vote!</button>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </mat-expansion-panel>
+</mat-card>

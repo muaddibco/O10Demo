@@ -106,6 +106,7 @@ export interface Poll {
   pollId: number;
   name: string;
   state: number;
+  issuer: string;
   candidates: Candidate[];
 }
 

@@ -9,7 +9,8 @@ import { MessageService } from 'src/app/services/message.service';
 import { AttributesIssuanceRequest, UserAttributeScheme, UsersService } from 'src/app/services/users.service';
 import { AuthenticatePwdComponent } from '../dialogs/authenticate-pwd/authenticate-pwd.component';
 import { RequestIdentityComponent, RequestIdentityOutput } from "../dialogs/request-identity/request-identity.component";
-import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@aspnet/signalr';
+import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
+import { ServiceProvidersService } from 'src/app/services/service-providers.service';
 
 @Component({
   selector: 'app-user-wallet',
@@ -18,13 +19,13 @@ import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@aspnet
 })
 export class UserWalletComponent implements OnInit {
 
-  public hubConnection: HubConnection;
+  private hubConnection: HubConnection;
   private accountId: number;
   public userAttributeSchemes: UserAttributeScheme[] = [];
   public displayedAssociatedAttrColumns = ["alias", "content"]
 
   public serviceProviders: DemoSpAccount[];
-  public displayedSpColumns = ["accountName"]
+  public displayedSpColumns = ["accountName", "image"]
 
   public polls: Poll[] = [];
 
@@ -35,6 +36,7 @@ export class UserWalletComponent implements OnInit {
     private userService: UsersService,
     private accountsService: AccountsService,
     private ecService: ElectionCommitteeService,
+    private spService: ServiceProvidersService,
     private messagesSerivce: MessageService,
     private dialog: MatDialog
   ) {
@@ -74,13 +76,18 @@ export class UserWalletComponent implements OnInit {
     });
 
     this.getAttributes();
-
-    this.getPolls();
   }
 
-  private getPolls() {
-    this.ecService.getPollsByState(2).subscribe(p => {
-      this.polls = p;
+  private getPolls(that: UserWalletComponent) {
+    that.ecService.getPollsByState(2).subscribe(p => {
+      const polls: Poll[] = [];
+      for (const poll of p) {
+        const scheme = that.userAttributeSchemes.find(s => s.issuer === poll.issuer);
+        if(scheme) {
+          polls.push(poll);
+        }
+      }
+      that.polls = polls;
     });
   }
 
@@ -89,6 +96,7 @@ export class UserWalletComponent implements OnInit {
     this.userService.getUserAttributes(this.accountId).subscribe(r => {
       this.userAttributeSchemes = r;
       this.updating = false;
+      this.getPolls(this);
     });
   }
 
@@ -96,7 +104,6 @@ export class UserWalletComponent implements OnInit {
     this.hubConnection = new HubConnectionBuilder().withUrl(demoConfig.baseUri + "/identitiesHub").build();
     this.hubConnection.on("PushAttribute", (i) => {
       this.getAttributes();
-      this.getPolls();
     });
 
     this.hubConnection.onclose(e => {
@@ -175,5 +182,27 @@ export class UserWalletComponent implements OnInit {
   onParticipateInPoll(poll: Poll) {
     sessionStorage.setItem("pollId", poll.pollId.toString());
     this.router.navigate(['/user-vote']);
+  }
+
+  onOpenSp(spAccount: DemoSpAccount) {
+    const that = this;
+    this.spService.GetSessionInfo(spAccount.account.accountId).subscribe(r => {
+      const url = this.router.serializeUrl(
+        this.router.createUrlTree(
+          [`/sp-frontend`], {
+            queryParams: {
+              accountId: spAccount.account.accountId,
+              sessionKey: r.sessionKey
+            }
+          })
+      );
+    
+      window.open(url, '_blank');
+      
+      const rootAttributeId = this.userAttributeSchemes[0].rootAttributes.find(r => !r.isOverriden && r.validated).userAttributeId;
+      that.userService.sendUniversalProofs(that.accountId, r.publicKey, r.sessionKey, spAccount.accountName, rootAttributeId).subscribe(r => {
+
+      });
+    });
   }
 }

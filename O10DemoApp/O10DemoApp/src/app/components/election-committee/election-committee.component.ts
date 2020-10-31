@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { ElectionCommitteeService, Poll } from 'src/app/services/election-committee.service';
@@ -14,17 +15,21 @@ export class ElectionCommitteeComponent implements OnInit {
 
   public polls: Poll[] = [];
   public displayedColumns = ["pollId", "name", "state"];
+  public pollsDataSource: MatTableDataSource<Poll>;
 
   constructor(
     private ecService: ElectionCommitteeService,
     private dialog: MatDialog,
     private changeDetectorRefs: ChangeDetectorRef,
     private router: Router
-  ) { }
+  ) { 
+    this.pollsDataSource = new MatTableDataSource<Poll>();
+  }
 
   ngOnInit(): void {
     this.ecService.getPolls().subscribe(p => {
       this.polls = p;
+      this.pollsDataSource.data = p;
       this.changeDetectorRefs.detectChanges();
     });
   }
@@ -49,7 +54,8 @@ export class ElectionCommitteeComponent implements OnInit {
       if(r) {
         this.ecService.registerPoll(r).subscribe(p => {
           if(p) {
-            that.polls.push(p);
+            that.polls = [...that.polls, p];
+            that.pollsDataSource.data = that.polls;
           }
         })
       }
