@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nethereum.Rsk" Version="3.8.0" />
-    <PackageReference Include="O10.Client.Common" Version="1.2.0" />
+    <PackageReference Include="O10.Client.Common" Version="1.2.1" />
     <PackageReference Include="O10.Core" Version="1.1.0" />
   </ItemGroup>
 
