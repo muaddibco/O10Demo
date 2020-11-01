@@ -27,5 +27,4 @@ export class DemoDashboardComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

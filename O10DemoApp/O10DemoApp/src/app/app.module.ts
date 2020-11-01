@@ -24,6 +24,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { ClipboardModule } from '@angular/cdk/clipboard';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MessagesComponent } from './components/messages/messages.component';
@@ -68,6 +70,7 @@ import { SpFrontendComponent } from './components/sp-frontend/sp-frontend.compon
     ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ClipboardModule,
     MatTableModule, MatIconModule, MatPaginatorModule, MatButtonModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatToolbarModule, MatStepperModule, MatProgressBarModule, MatGridListModule, MatSlideToggleModule, MatProgressSpinnerModule
   ],
   providers: [],

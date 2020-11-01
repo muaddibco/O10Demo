@@ -9,13 +9,15 @@ import { IssuerDetailsComponent } from './components/issuer-details/issuer-detai
 import { IssuerDetailsListComponent } from './components/issuer-details-list/issuer-details-list.component';
 import { O10IdentityService } from "./services/o10identity.service";
 import { IssuerRegisterComponent } from './components/issuer-register/issuer-register.component';
+import { SchemeDetailsComponent } from './components/scheme-details/scheme-details.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     IssuerDetailsComponent,
     IssuerDetailsListComponent,
-    IssuerRegisterComponent
+    IssuerRegisterComponent,
+    SchemeDetailsComponent
   ],
   imports: [
     BrowserModule,

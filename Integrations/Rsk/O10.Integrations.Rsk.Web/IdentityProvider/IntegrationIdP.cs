@@ -3,12 +3,10 @@ using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
-using O10.Client.Common.Exceptions;
 using O10.Client.Common.Integration;
 using O10.Client.Common.Interfaces;
 using O10.Client.DataLayer.Services;
 using O10.Core.Architecture;
-
 using O10.Core.Configuration;
 using O10.Core.Logging;
 using O10.Integrations.Rsk.Web.Configuration;
@@ -142,12 +140,11 @@ namespace O10.Integrations.Rsk.Web
                 {
                     var account = new Account(privateKey);
 
-                    List<AttributeDefinition> definitions = attributeDefinitions.Select(a => new AttributeDefinition { AttributeName = a.AttributeName, AttributeScheme = a.SchemeName, Alias = a.Alias, IsRoot = a.IsRoot }).ToList();
-
                     actionStatus.IntegrationAddress = account.Address;
 
                     var web3 = new Web3(account, _integrationConfiguration.RpcUri);
                     var o10IdentityService = new O10IdentityService(web3, _integrationConfiguration.ContractAddress);
+
                     var issuers = await o10IdentityService.GetAllIssuersQueryAsync().ConfigureAwait(false);
                     if (!issuers.ReturnValue1.Any(issuers => issuers.Address.Equals(account.Address, StringComparison.InvariantCultureIgnoreCase)))
                     {
@@ -166,6 +163,7 @@ namespace O10.Integrations.Rsk.Web
                             scheme = null;
                         }
 
+                        List<AttributeDefinition> definitions = attributeDefinitions.Select(a => new AttributeDefinition { AttributeName = a.AttributeName, AttributeScheme = a.SchemeName, Alias = a.Alias, IsRoot = a.IsRoot }).ToList();
                         if (scheme?.ReturnValue2.All(a => definitions.Any(d => a.AttributeName == d.AttributeName && a.AttributeScheme == d.AttributeScheme && a.Alias == d.Alias && a.IsRoot == d.IsRoot)) ?? false)
                         {
                             actionStatus.ActionSucceeded = true;
@@ -209,6 +207,103 @@ namespace O10.Integrations.Rsk.Web
                 _semaphoreSlim.Release();
             }
 
+            return actionStatus;
+        }
+
+        public async Task<ActionStatus> IssueAttributes(long accountId, IssuanceDetails issuanceDetails)
+        {
+            ActionStatus actionStatus = new ActionStatus
+            {
+                IntegrationType = Key,
+                IntegrationAction = nameof(IssueAttributes),
+                ActionSucceeded = true
+            };
+
+            await _semaphoreSlim.WaitAsync();
+
+            try
+            {
+                var privateKey = _dataAccessService.GetAccountKeyValue(accountId, "RskSecretKey");
+                if (string.IsNullOrEmpty(privateKey))
+                {
+                    actionStatus.ActionSucceeded = false;
+                    actionStatus.ErrorMsg = $"Account {accountId} has no integration with {Key}";
+                }
+                else
+                {
+                    var account = new Account(privateKey);
+
+                    actionStatus.IntegrationAddress = account.Address;
+
+                    var web3 = new Web3(account, _integrationConfiguration.RpcUri);
+                    var o10IdentityService = new O10IdentityService(web3, _integrationConfiguration.ContractAddress);
+
+                    var issuers = await o10IdentityService.GetAllIssuersQueryAsync().ConfigureAwait(false);
+                    if (!issuers.ReturnValue1.Any(issuers => issuers.Address.Equals(account.Address, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        actionStatus.ActionSucceeded = false;
+                        actionStatus.ErrorMsg = $"Account with Id {accountId} not registered as an Identity Provider";
+                    }
+                    else
+                    {
+                        List<AttributeRecord> attributeRecords = new List<AttributeRecord> 
+                        {
+                            new AttributeRecord
+                            {
+                                AttributeName = issuanceDetails.RootAttribute.AttributeName,
+                                AssetCommitment = issuanceDetails.RootAttribute.AssetCommitment,
+                                BindingCommitment = issuanceDetails.RootAttribute.OriginatingCommitment
+                            }
+                        };
+
+                        foreach (var attr in issuanceDetails.AssociatedAttributes)
+                        {
+                            attributeRecords.Add(new AttributeRecord 
+                            {
+                                AttributeName = attr.AttributeName,
+                                AssetCommitment = attr.AssetCommitment,
+                                BindingCommitment = attr.BindingToRootCommitment,
+                                AttributeId = new BigInteger(0),
+                                Version = new BigInteger(0)
+                            });
+                        }
+
+                        var balance = await web3.Eth.GetBalance.SendRequestAsync(account.Address).ConfigureAwait(false);
+                        var functionIssueAttributesHandler = web3.Eth.GetContractTransactionHandler<IssueAttributesFunction>();
+                        IssueAttributesFunction func = new IssueAttributesFunction
+                        {
+                            AttributeRecords = attributeRecords
+                        };
+                        var esimatedGas = await functionIssueAttributesHandler.EstimateGasAsync(_integrationConfiguration.ContractAddress, func).ConfigureAwait(false);
+                        func.Gas = new BigInteger(esimatedGas.ToLong() * 100);
+                        if (balance < func.Gas)
+                        {
+                            actionStatus.ActionSucceeded = false;
+                            actionStatus.ErrorMsg = "Not enough funds";
+                        }
+                        else
+                        {
+                            var receipt = await o10IdentityService.IssueAttributesRequestAndWaitForReceiptAsync(func.AttributeRecords).ConfigureAwait(false);
+                            if (receipt.Failed())
+                            {
+                                actionStatus.ActionSucceeded = false;
+                                actionStatus.ErrorMsg = $"Transaction with hash {receipt.TransactionHash} failed";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"{nameof(IssueAttributes)} failed for the acccount {accountId}", ex);
+                actionStatus.ActionSucceeded = false;
+                actionStatus.ErrorMsg = ex.Message;
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
+        
             return actionStatus;
         }
 

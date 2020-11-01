@@ -156,6 +156,35 @@ export class O10IdentityService {
       });
     });
   }
+
+  public async getScheme(addr: string): Promise<AttributeDefinition[]> {
+    const that = this;
+    console.log('o10identity.service :: getScheme :: start');
+    return new Promise((resolve, reject) => {
+      console.log('o10identity.service :: getScheme :: tokenAbi');
+      console.log(tokenAbi);
+      const contract = require('@truffle/contract');
+      const o10IdentityContract = contract(tokenAbi);
+      o10IdentityContract.setProvider(that.web3);
+      console.log('o10identity.service :: getScheme :: o10IdentityContract');
+      console.log(o10IdentityContract);
+      o10IdentityContract.deployed().then(function(instance) {
+        return instance.getScheme(
+          addr,
+          {
+            from: that.account
+          });
+      }).then(function(status) {
+        if (status) {
+          console.log(status);
+          return resolve((<GetSchemeResponse>status).AttributeDefinitions);
+        }
+      }).catch(function(error) {
+        console.log(error);
+        return reject('o10identity.service error');
+      });
+    });
+  }
 }
 
 export interface IssuerDetails {
@@ -168,4 +197,9 @@ export class AttributeDefinition {
   AttributeScheme: string;
   Alias: string;
   IsRoot: boolean;
+}
+
+export interface GetSchemeResponse {
+  Version: number;
+  AttributeDefinitions: AttributeDefinition[];
 }

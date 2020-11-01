@@ -16,7 +16,12 @@
       <!-- RSK Address Column -->
       <ng-container matColumnDef="rskAddress">
         <th mat-header-cell *matHeaderCellDef> RSK Address </th>
-        <td mat-cell *matCellDef="let element"> {{element.rskAddress}} </td>
+        <td mat-cell *matCellDef="let element"> 
+          <span>{{element.rskAddress}}</span>
+          <button mat-icon-button [cdkCopyToClipboard]="element.rskAddress" (click)="$event.stopPropagation();" *ngIf="element.rskAddress">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </td>
       </ng-container>
 
       <!-- Activated Column -->

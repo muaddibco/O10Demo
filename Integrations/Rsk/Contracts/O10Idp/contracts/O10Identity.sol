@@ -136,42 +136,20 @@ contract O10Identity is ERC721, ERC721Burnable, Ownable {
         return (idx, definitions);
     }
 
-    // function getScheme(address issuerAddr) public payable returns(uint256, bool[] memory, string[] memory, string[] memory, string[] memory) {
-    //     require(!_issuers[issuerAddr].IsRegistered, "Issuer with this address not registered");
-    //     require(_issuers[issuerAddr].DefinitionVersion.current() > 0, "Issuer didn't define any scheme yet");
-
-    //     uint256 idx = _issuers[issuerAddr].DefinitionVersion.current();
-    //     AttributeDefinition[] storage definitions = _issuers[issuerAddr].Definitions[idx];
-
-    //     bool[] memory isRoot = new bool[](definitions.length);
-    //     string[] memory schemeNames = new string[](definitions.length);
-    //     string[] memory attributeNames = new string[](definitions.length);
-    //     string[] memory attributeAliases = new string[](definitions.length);
-
-    //     for (uint256 i = 0; i < definitions.length; i++) {
-    //         isRoot[i] = definitions[i].IsRoot;
-    //         schemeNames[i] = definitions[i].AttributeScheme;
-    //         attributeNames[i] = definitions[i].AttributeName;
-    //         attributeAliases[i] = definitions[i].Alias;
-    //     }
-
-    //     return (idx, isRoot, schemeNames, attributeNames, attributeAliases);
-    // }
-
     function issueAttributes(AttributeRecord[] memory attributeRecords) public {
         address issuerAddr = msg.sender;
         require(_issuers[issuerAddr].IsRegistered, "Issuer with this address not registered");
         require(_issuers[issuerAddr].DefinitionVersion.current() > 0, "Issuer didn't define any scheme yet");
 
         uint256 idx = _issuers[issuerAddr].DefinitionVersion.current();
-        AttributeDefinition[] memory definitions = new AttributeDefinition[](_issuers[issuerAddr].Definitions[idx].length);
 
-        for (uint256 i = 0; i < definitions.length; i++) {
+        for (uint256 i = 0; i < attributeRecords.length; i++) {
             bool found = false;
 
-            for (uint256 j = 0; j < attributeRecords.length; j++) {
-                if(keccak256(abi.encodePacked(attributeRecords[j].AttributeName)) == keccak256(abi.encodePacked(definitions[i].AttributeName))) {
+            for (uint256 j = 0; j < _issuers[issuerAddr].Definitions[idx].length; j++) {
+                if(equal(attributeRecords[i].AttributeName, _issuers[issuerAddr].Definitions[idx][j].AttributeName)) {
                     found = true;
+                    break;
                 }
             }
 
@@ -182,7 +160,7 @@ contract O10Identity is ERC721, ERC721Burnable, Ownable {
             _issuers[issuerAddr].AttributeId.increment();
 
             if(_issuers[issuerAddr].BindingCommitmentToAttribute[attributeRecords[i].BindingCommitment].AttributeId > 0) {
-                _burn(_issuers[issuerAddr].BindingCommitmentToAttribute[attributeRecords[i].BindingCommitment].AttributeId);
+                burn(_issuers[issuerAddr].BindingCommitmentToAttribute[attributeRecords[i].BindingCommitment].AttributeId);
             }
 
             uint256 attributeId = _issuers[issuerAddr].AttributeId.current();
@@ -195,6 +173,37 @@ contract O10Identity is ERC721, ERC721Burnable, Ownable {
 
             _mint(issuerAddr, attributeId);
         }
+    }
 
+    function checkRootAttributeValid(address issuerAddr, bytes32 attributeCommitment) view public returns(bool) {
+        require(_issuers[issuerAddr].IsRegistered, "Issuer with this address not registered");
+        require(_issuers[issuerAddr].DefinitionVersion.current() > 0, "Issuer didn't define any scheme yet");
+        require(_issuers[issuerAddr].AssetCommitmentToAttribute[attributeCommitment].AttributeId > 0, "No attribute with this commitment registered at the Issuer");
+
+        return _exists(_issuers[issuerAddr].AssetCommitmentToAttribute[attributeCommitment].AttributeId);
+    }
+
+    function compare(string memory _a, string memory _b) private pure returns (int) {
+        bytes memory a = bytes(_a);
+        bytes memory b = bytes(_b);
+        uint minLength = a.length;
+        if (b.length < minLength) minLength = b.length;
+        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
+                return -1;
+            else if (a[i] > b[i])
+                return 1;
+        if (a.length < b.length)
+            return -1;
+        else if (a.length > b.length)
+            return 1;
+        else
+            return 0;
+    }
+
+    /// @dev Compares two strings and returns true iff they are equal.
+    function equal(string memory _a, string memory _b) private pure returns (bool) {
+        return compare(_a, _b) == 0;
     }
 }

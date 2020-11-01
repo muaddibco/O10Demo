@@ -199,7 +199,9 @@ export class UserWalletComponent implements OnInit {
     
       window.open(url, '_blank');
       
-      const rootAttributeId = this.userAttributeSchemes[0].rootAttributes.find(r => !r.isOverriden && r.validated).userAttributeId;
+      console.info("Sending universal proofs of authentication to " + spAccount.accountName);
+      const rootAttributeId = this.userAttributeSchemes[0].rootAttributes.find(r => !r.isOverriden).userAttributeId;
+      console.info("rootAttributeId = " + rootAttributeId);
       that.userService.sendUniversalProofs(that.accountId, r.publicKey, r.sessionKey, spAccount.accountName, rootAttributeId).subscribe(r => {
 
       });

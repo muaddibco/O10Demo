@@ -888,12 +888,12 @@
     "31": {
       "events": {},
       "links": {},
-      "address": "0xEbeb04bE2C14A291a5a4834AaA017236ceDf173a",
-      "transactionHash": "0xd9be0f6c44dadbfbd852ed69d571961d1c1bfd4194d8bb03772262cbbd6e486e"
+      "address": "0xe070B9707ab6E095361788496121D25c76aDDe59",
+      "transactionHash": "0x44da644f8ca83c75eb6fd48e936d6d3776971ebb7eed82101f61a64743610605"
     }
   },
   "schemaVersion": "3.3.0",
-  "updatedAt": "2020-10-17T14:14:31.401Z",
+  "updatedAt": "2020-11-01T11:52:25.210Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

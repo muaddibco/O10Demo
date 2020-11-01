@@ -185,7 +185,19 @@ namespace O10.Client.Web.Portal.Controllers
             var integrationService = _integrationIdPRepository.GetInstance(integrationKey);
             if (integrationService != null)
             {
-                actionStatus = await integrationService.StoreScheme(accountDescriptor.AccountId, attributeDefinitions).ConfigureAwait(false);
+                var definitions = _dataAccessService.GetAttributesSchemeByIssuer(issuer, true)
+                    .Select(
+                        a => new AttributeDefinition
+                        {
+                            SchemeId = a.IdentitiesSchemeId,
+                            AttributeName = a.AttributeName,
+                            SchemeName = a.AttributeSchemeName,
+                            Alias = a.Alias,
+                            Description = a.Description,
+                            IsActive = a.IsActive,
+                            IsRoot = a.CanBeRoot
+                        }).ToArray();
+                actionStatus = await integrationService.StoreScheme(accountDescriptor.AccountId, definitions).ConfigureAwait(false);
             }
 
             AttributeDefinitionsResponse response = new AttributeDefinitionsResponse
