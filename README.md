@@ -38,5 +38,7 @@ There should be returned response as follows:
 ```
 
 ## Launching front-end
-Go to /O10DemoApp/O10DemoApp folder
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Go to /O10DemoApp/O10DemoApp folder.
+1. run `npm install`
+1. Run `ng serve` for a dev server. Do no change the default port 4200 since this is the port allowed for SignalR communication.
+1. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
