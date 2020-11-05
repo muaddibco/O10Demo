@@ -1,1 +1,130 @@
-<p>sp-frontend works!</p>
+<mat-card *ngIf="phase === 0">
+  <mat-card-header>
+    <mat-card-title>Authenticating User</mat-card-title>
+  </mat-card-header>
+  <p><em>Waiting for identification proofs arrival...</em></p>
+  <mat-spinner></mat-spinner>
+</mat-card>
+<mat-card *ngIf="phase === 1">
+  <mat-card-header>
+    <mat-card-title>User Authenticated</mat-card-title>
+  </mat-card-header>
+  <div>
+    <table>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-id-verified-50.png" />
+        </td>
+        <td>
+          <span>Root Identity is valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-good-pincode-50.png" />
+        </td>
+        <td>
+          <span>Knowledge Factor proof is valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-test-passed-50.png" />
+        </td>
+        <td>
+          <span>Additional Attributes are valid</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <p><em>Congratulations, authentication passed successfully</em></p>
+</mat-card>
+<mat-card *ngIf="phase === 2">
+  <mat-card-header>
+    <mat-card-title>User Authentication Failed</mat-card-title>
+  </mat-card-header>
+  <div *ngIf="errorType === 1">
+    <table>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-id-not-verified-50.png" />
+        </td>
+        <td>
+          <span>Root Identity is not valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-not-applicable-50.png" />
+        </td>
+        <td>
+          <span>Knowledge Factor not verified</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-not-applicable-50.png" />
+        </td>
+        <td>
+          <span>Additional Attributes not verified</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div *ngIf="errorType === 2">
+    <table>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-id-verified-50.png" />
+        </td>
+        <td>
+          <span>Root Identity is valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-wrong-pincode-50.png" />
+        </td>
+        <td>
+          <span>Knowledge Factor proof is not valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-not-applicable-50.png" />
+        </td>
+        <td>
+          <span>Additional Attributes not verified</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div *ngIf="errorType === 3">
+    <table>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-id-verified-50.png" />
+        </td>
+        <td>
+          <span>Root Identity is valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-good-pincode-50.png" />
+        </td>
+        <td>
+          <span>Knowledge Factor proof is valid</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <img src="/assets/img/icons8-scorecard-50.png" />
+        </td>
+        <td>
+          <span>Mandatory Identity Attributes were either not provided or have incorrect value</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</mat-card>

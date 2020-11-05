@@ -94,8 +94,8 @@ export class AccountsService {
       );
   }
 
-  initiateBindingKey(accountId: number, pwd: string) {
-    return this.http.post(demoConfig.baseUri + '/api/accounts/BindingKey', { accountId: accountId, password: pwd })
+  initiateBindingKey(accountId: number, pwd: string, force: boolean) {
+    return this.http.post(demoConfig.baseUri + '/api/accounts/BindingKey', { accountId: accountId, password: pwd, force: force })
       .pipe(
         catchError(error => {
           const msg = "Failed to initiate binding key of the account due to the error: " + error.message;

@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { QRCodeModule } from 'angularx-qrcode';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
@@ -43,6 +44,7 @@ import { InputDialogComponent } from './components/dialogs/input-dialog/input-di
 import { PollComponent } from './components/poll/poll.component';
 import { UserVoteComponent } from './components/user-vote/user-vote.component';
 import { SpFrontendComponent } from './components/sp-frontend/sp-frontend.component';
+import { QrcodeComponent } from './components/qrcode/qrcode.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,7 @@ import { SpFrontendComponent } from './components/sp-frontend/sp-frontend.compon
     PollComponent,
     UserVoteComponent,
     SpFrontendComponent,
+    QrcodeComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +74,7 @@ import { SpFrontendComponent } from './components/sp-frontend/sp-frontend.compon
     AppRoutingModule,
     BrowserAnimationsModule,
     ClipboardModule,
+    QRCodeModule,
     MatTableModule, MatIconModule, MatPaginatorModule, MatButtonModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatExpansionModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatToolbarModule, MatStepperModule, MatProgressBarModule, MatGridListModule, MatSlideToggleModule, MatProgressSpinnerModule
   ],
   providers: [],

@@ -11,6 +11,7 @@ import { AuthenticatePwdComponent } from '../dialogs/authenticate-pwd/authentica
 import { RequestIdentityComponent, RequestIdentityOutput } from "../dialogs/request-identity/request-identity.component";
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { ServiceProvidersService } from 'src/app/services/service-providers.service';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-wallet',
@@ -54,7 +55,7 @@ export class UserWalletComponent implements OnInit {
       const dialogAuthRef = this.dialog.open(AuthenticatePwdComponent, { width: '500px' });
       dialogAuthRef.afterClosed().subscribe(p => {
         if (p) {
-          this.accountsService.initiateBindingKey(this.accountId, p.password).subscribe(b => {
+          this.accountsService.initiateBindingKey(this.accountId, p.password, false).subscribe(b => {
             if (!b) {
               authSubject.next(true);
             }
@@ -83,7 +84,7 @@ export class UserWalletComponent implements OnInit {
       const polls: Poll[] = [];
       for (const poll of p) {
         const scheme = that.userAttributeSchemes.find(s => s.issuer === poll.issuer);
-        if(scheme) {
+        if (scheme) {
           polls.push(poll);
         }
       }
@@ -185,26 +186,58 @@ export class UserWalletComponent implements OnInit {
   }
 
   onOpenSp(spAccount: DemoSpAccount) {
+
     const that = this;
-    this.spService.GetSessionInfo(spAccount.account.accountId).subscribe(r => {
+
+    const openSpSubject = new Subject<boolean>();
+    openSpSubject.subscribe(_b => {
+      this.openSp(spAccount);
+    });
+
+    const authSubject = new Subject<boolean>();
+    authSubject.subscribe(_b => {
+      const dialogAuthRef = this.dialog.open(AuthenticatePwdComponent, { width: '500px' });
+      dialogAuthRef.afterClosed().subscribe(p => {
+        if (p) {
+          this.accountsService.initiateBindingKey(this.accountId, p.password, true).subscribe(b => {
+            if (!b) {
+              authSubject.next(true);
+            } else {
+              openSpSubject.next(true);
+            }
+          });
+        }
+      });
+    });
+
+    authSubject.next(true);
+  }
+
+  private openSp(spAccount: DemoSpAccount) {
+    const that = this;
+    this.spService.GetSessionInfo(spAccount.account.accountId).subscribe(async (r) => {
       const url = this.router.serializeUrl(
         this.router.createUrlTree(
           [`/sp-frontend`], {
-            queryParams: {
-              accountId: spAccount.account.accountId,
-              sessionKey: r.sessionKey
-            }
-          })
+          queryParams: {
+            accountId: spAccount.account.accountId,
+            sessionKey: r.sessionKey
+          }
+        })
       );
-    
-      window.open(url, '_blank');
-      
-      console.info("Sending universal proofs of authentication to " + spAccount.accountName);
-      const rootAttributeId = this.userAttributeSchemes[0].rootAttributes.find(r => !r.isOverriden).userAttributeId;
-      console.info("rootAttributeId = " + rootAttributeId);
-      that.userService.sendUniversalProofs(that.accountId, r.publicKey, r.sessionKey, spAccount.accountName, rootAttributeId).subscribe(r => {
 
-      });
+      window.open(url, '_blank');
+
+      setTimeout(() => {
+        console.info("Sending universal proofs of authentication to " + spAccount.accountName);
+        let rootAttribute = this.userAttributeSchemes[0].rootAttributes.find(r => !r.isOverriden);
+        if (!rootAttribute) {
+          rootAttribute = this.userAttributeSchemes[0].rootAttributes[0];
+        }
+        console.info("rootAttributeId = " + rootAttribute.userAttributeId);
+        that.userService.sendUniversalProofs(that.accountId, r.publicKey, r.sessionKey, spAccount.accountName, rootAttribute.userAttributeId).subscribe(r => {
+        });
+      }, 3000);
     });
   }
 }
