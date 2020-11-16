@@ -45,6 +45,7 @@ import { PollComponent } from './components/poll/poll.component';
 import { UserVoteComponent } from './components/user-vote/user-vote.component';
 import { SpFrontendComponent } from './components/sp-frontend/sp-frontend.component';
 import { QrcodeComponent } from './components/qrcode/qrcode.component';
+import { IdentityConfirmationComponent } from './components/dialogs/identity-confirmation/identity-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { QrcodeComponent } from './components/qrcode/qrcode.component';
     UserVoteComponent,
     SpFrontendComponent,
     QrcodeComponent,
+    IdentityConfirmationComponent,
   ],
   imports: [
     BrowserModule,

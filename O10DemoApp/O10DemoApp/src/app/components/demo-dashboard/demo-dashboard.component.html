@@ -30,9 +30,9 @@
         <td mat-cell *matCellDef="let element">
           <mat-icon aria-hidden="false" aria-label="done" color="primary"
             *ngIf="element.activated && element.activationFinished">done</mat-icon>
-          <mat-icon aria-hidden="false" aria-label="in progress" *ngIf="!element.activationFinished">
+          <div *ngIf="!element.activationFinished">
             <mat-spinner diameter="20"></mat-spinner>
-          </mat-icon>
+          </div>
           <mat-icon aria-hidden="false" aria-label="failure" color="warn"
             *ngIf="!element.activated && element.activationFinished">report_problem</mat-icon>
         </td>
@@ -126,9 +126,10 @@
         <td mat-cell *matCellDef="let element">
           <mat-icon aria-hidden="false" aria-label="done" color="primary"
             *ngIf="element.activated && element.activationFinished">done</mat-icon>
-          <mat-icon aria-hidden="false" aria-label="in progress" *ngIf="!element.activationFinished">hourglass_empty
-          </mat-icon>
-          <mat-icon aria-hidden="false" aria-label="failure" color="warn"
+            <div *ngIf="!element.activationFinished">
+              <mat-spinner diameter="20"></mat-spinner>
+            </div>
+            <mat-icon aria-hidden="false" aria-label="failure" color="warn"
             *ngIf="!element.activated && element.activationFinished">report_problem</mat-icon>
         </td>
       </ng-container>

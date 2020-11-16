@@ -6,12 +6,13 @@ import { AccountsService } from 'src/app/services/accounts.service';
 import { demoConfig, DemoSpAccount } from 'src/app/services/demo-state.service';
 import { ElectionCommitteeService, Poll } from 'src/app/services/election-committee.service';
 import { MessageService } from 'src/app/services/message.service';
-import { AttributesIssuanceRequest, UserAttributeScheme, UsersService } from 'src/app/services/users.service';
+import { AttributesIssuanceRequest, IdentityPool, UserAttributeScheme, UsersService } from 'src/app/services/users.service';
 import { AuthenticatePwdComponent } from '../dialogs/authenticate-pwd/authenticate-pwd.component';
 import { RequestIdentityComponent, RequestIdentityOutput } from "../dialogs/request-identity/request-identity.component";
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { ServiceProvidersService } from 'src/app/services/service-providers.service';
 import { delay } from 'rxjs/operators';
+import { IdentityConfirmationComponent, IdentityConfirmationDialogOutput } from '../dialogs/identity-confirmation/identity-confirmation.component';
 
 @Component({
   selector: 'app-user-wallet',
@@ -226,18 +227,43 @@ export class UserWalletComponent implements OnInit {
         })
       );
 
-      window.open(url, '_blank');
-
-      setTimeout(() => {
-        console.info("Sending universal proofs of authentication to " + spAccount.accountName);
-        let rootAttribute = this.userAttributeSchemes[0].rootAttributes.find(r => !r.isOverriden);
-        if (!rootAttribute) {
-          rootAttribute = this.userAttributeSchemes[0].rootAttributes[0];
+      const dialogRef = this.dialog.open(IdentityConfirmationComponent, {
+        width: '500px',
+        data: {
+          accountId: this.accountId,
+          sessionKey: r.sessionKey,
+          spPublicKey: spAccount.account.publicSpendKey,
+          userAttributeSchemes: this.userAttributeSchemes
         }
-        console.info("rootAttributeId = " + rootAttribute.userAttributeId);
-        that.userService.sendUniversalProofs(that.accountId, r.publicKey, r.sessionKey, spAccount.accountName, rootAttribute.userAttributeId).subscribe(r => {
-        });
-      }, 3000);
+      });
+
+      dialogRef.afterClosed().subscribe(d => {
+        if (d) {
+          const res: IdentityConfirmationDialogOutput = d as IdentityConfirmationDialogOutput;
+
+          var pools: IdentityPool[] = [];
+          pools.push({
+            rootAttributeId: res.rootAttributeId,
+            associatedAttributes: []
+          });
+
+          for (const validation of res.validations) {
+            if(validation.isApproved) {
+              pools[0].associatedAttributes.push(validation.attributeId);
+            }
+          }
+
+          window.open(url, '_blank');
+
+          setTimeout(() => {
+            console.info("Sending universal proofs of authentication to " + spAccount.accountName);
+            //let rootAttribute = this.userService.getFirstSuitableRoot(this.userAttributeSchemes[0]);
+            //console.info("rootAttributeId = " + rootAttribute.userAttributeId);
+            that.userService.sendUniversalProofs(that.accountId, r.publicKey, r.sessionKey, spAccount.accountName, pools[0].rootAttributeId, pools).subscribe(r => {
+            });
+          }, 3000);
+        }
+      });
     });
   }
 }

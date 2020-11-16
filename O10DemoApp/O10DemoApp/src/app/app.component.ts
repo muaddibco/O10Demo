@@ -5,6 +5,7 @@ import { DemoAccount, demoConfig, DemoIdpAccount, DemoSpAccount } from './servic
 import { IdentityProvidersService } from './services/identity-providers.service';
 import { MessageService } from "./services/message.service";
 import { SchemeResolutionService } from './services/scheme-resolution.service';
+import { IdentityAttributeValidationDefinition, ServiceProvidersService } from './services/service-providers.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent implements OnInit {
     private messageService: MessageService,
     private accountsService: AccountsService,
     private schemeDefinitionService: SchemeResolutionService,
-    private identityProviderService: IdentityProvidersService) {
+    private identityProviderService: IdentityProvidersService,
+    private serviceProvidersService: ServiceProvidersService) {
 
   }
 
@@ -33,12 +35,42 @@ export class AppComponent implements OnInit {
         if (!r.integrationActionStatus.actionSucceeded) {
           d.isInErrorState = true;
           d.currentState = "setting up identity scheme failed, error: " + r.integrationActionStatus.errorMsg
-          this.messageService.add("Initializing of the demo account " + d.accountName + " failed");
+          this.messageService.error("Initializing of the demo account " + d.accountName + " failed");
         } else {
           d.currentState = "setting up identity scheme completed"
           this.messageService.add("Initializing of the demo account " + d.accountName + " completed");
         }
       });
+    });
+
+    const accountValidationsSubject = new Subject<DemoSpAccount>();
+    accountValidationsSubject.subscribe(d => {
+      d.currentState = "setting up required validations...";
+      if(d.validations && d.validations.length > 0) {
+        const validations: IdentityAttributeValidationDefinition[] = [];
+        for (const validation of d.validations) {
+          validations.push({
+            schemeName: validation.schemeName,
+            validationType: validation.validationType.toString()
+          });
+        }
+
+        this.serviceProvidersService.SetIdentityAttributeValidationDefinitions(d.account.accountId, validations).subscribe(r => {
+          d.isInErrorState = !r;
+          if(!r) {
+            d.currentState = "setting up validations failed";
+            this.messageService.error("setting up validations failed")
+          } else {
+            d.currentState = "setting up validations completed";
+            this.messageService.add("setting up validations completed")
+          }
+          d.activationFinished = true;
+        });
+      } else {
+        d.currentState = "setting up validations completed";
+        this.messageService.add("setting up validations completed")
+        d.activationFinished = true;
+      }
     });
 
     const accountSubject = new Subject<DemoAccount>();
@@ -64,7 +96,8 @@ export class AppComponent implements OnInit {
                 }
               });
             } else if (a.accountType === 2) {
-
+              a.activated = true;
+              accountValidationsSubject.next(<DemoSpAccount>a);
             }
           }
         });

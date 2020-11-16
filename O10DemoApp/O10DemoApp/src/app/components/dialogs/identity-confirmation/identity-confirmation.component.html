@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>Confirm Identity Sharing</h1>
+<div mat-dialog-content>
+  <mat-select (selectionChange)="onRootSelectionChanged($event)">
+    <mat-option *ngFor="let item of data.userAttributeSchemes" [value]="item">
+      <span style="margin-left: 10px;">{{item.rootAttributeContent}}</span><span style="margin-left: 10px;">from</span><span style="margin-left: 10px;">{{item.issuerName}}</span>
+    </mat-option>
+  </mat-select>
+  <table class='table table-striped' *ngIf="showValidations">
+    <tbody>
+      <tr *ngFor="let validation of dialogOutput.validations">
+        <td width="1%">
+          <img src="/assets/img/icons8-tick-box-64.png" width="30px" *ngIf="validation.isApproved" />
+          <img src="/assets/img/icons8-unchecked-checkbox-64.png" width="30px" *ngIf="!validation.isApproved" />
+        </td>
+        <td>
+          <div *ngIf="!validation.issuerName" style="text-decoration: line-through;">
+              <span>{{validation.schemeName}}</span>
+          </div>
+          <div *ngIf="validation.issuerName">
+            <div *ngIf="validation.isApproved">
+                <span style="margin-left: 10px;">{{validation.alias}},</span><span style="margin-left: 10px; font-weight: bold;">{{validation.content}},</span><span style="margin-left: 10px;">from</span><span style="margin-left: 10px;">{{validation.issuerName}}</span></div>
+            <div style="text-decoration: line-through;" *ngIf="!validation.isApproved">
+                <span style="margin-left: 10px;">{{validation.alias}},</span><span style="margin-left: 10px; font-weight: bold;">{{validation.content}},</span><span style="margin-left: 10px;">from</span><span style="margin-left: 10px;">{{validation.issuerName}}</span></div>
+          </div>
+        </td>
+        <td width="1%">
+          <mat-slide-toggle [checked]="validation.isApproved" [id]="validation.attributeId"
+            (change)="onValidationApproveChange($event)"></mat-slide-toggle>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button [mat-dialog-close]="dialogOutput" >Submit</button>
+  <button mat-raised-button (click)="onCancel()">Cancel</button>
+</div>

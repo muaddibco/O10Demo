@@ -60,12 +60,13 @@ export class UsersService {
       );
   }
 
-  sendUniversalProofs(accountId: number, target: string, sessionKey: string, spInfo: string, rootAttributeId: number) {
+  sendUniversalProofs(accountId: number, target: string, sessionKey: string, spInfo: string, rootAttributeId: number, identityPools: IdentityPool[]) {
     return this.http.post(this.uri + '/UniversalProofs?accountId=' + accountId, {
       target: target,
       sessionKey: sessionKey,
       serviceProviderInfo: spInfo,
-      rootAttributeId: rootAttributeId
+      rootAttributeId: rootAttributeId,
+      identityPools: identityPools
     })
       .pipe(
         catchError(error => {
@@ -82,6 +83,32 @@ export class UsersService {
         })
       );
   }
+
+  getServiceProviderActionInfo(accountId: number, actionInfo: string, attributeId: number) {
+    return this.http.get<ServiceProviderActionAndValidations>(this.uri + '/ServiceProviderActionInfo?accountId=' + accountId + '&actionInfo=' + actionInfo + '&attributeId=' + attributeId)
+    .pipe(
+      catchError(error => {
+        const msg = "Failed to get service provider action info due to the error: " + error.message;
+        this.messageService.error(msg);
+        return of(<ServiceProviderActionAndValidations>null);
+      }),
+      map(r => r)
+    );
+}
+
+  getFirstSuitableRoot(userAttributeScheme: UserAttributeScheme) {
+    let rootAttribute = userAttributeScheme.rootAttributes.find(r => !r.isOverriden);
+    if (!rootAttribute) {
+      rootAttribute = userAttributeScheme.rootAttributes[0];
+    }
+
+    return rootAttribute;
+  }
+}
+
+export class IdentityPool {
+  rootAttributeId: number;
+  associatedAttributes: number[];
 }
 
 export class AttributesIssuanceRequest {
@@ -107,10 +134,11 @@ export interface UserAttribute {
 }
 
 export interface UserAssociatedAttribute {
-  attributeName: string;
+  schemeName: string;
   alias: string;
   content: string;
   valueType: string;
+  attributeId: number;
 }
 
 export interface UserAttributeScheme {
@@ -128,4 +156,15 @@ export interface UserAssociatedAttributes {
   issuer: string;
   issuerName: string;
   attributes: UserAssociatedAttribute[];
+}
+
+export interface ServiceProviderActionAndValidations {
+	isRegistered: boolean;
+	publicKey: string;
+	publicKey2: string;
+	sessionKey: string;
+	isBiomteryRequired: boolean;
+	extraInfo: string;
+	predefinedAttributeId: number;
+	validations: string[];
 }
